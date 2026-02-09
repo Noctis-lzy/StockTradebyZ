@@ -5,9 +5,11 @@ import importlib
 import json
 import logging
 import sys
+import datetime
 from pathlib import Path
 from typing import Any, Dict, Iterable, List
 
+import datetime as dt
 import pandas as pd
 
 # ---------- 日志 ----------
@@ -25,15 +27,29 @@ logger = logging.getLogger("select")
 
 # ---------- 工具 ----------
 
+# 定义函数：加载数据
 def load_data(data_dir: Path, codes: Iterable[str]) -> Dict[str, pd.DataFrame]:
+    # 初始化空字典，用于存储数据框
     frames: Dict[str, pd.DataFrame] = {}
+
+    # 遍历每个股票/产品代码
     for code in codes:
+        # 构建文件路径：数据目录/代码.csv
         fp = data_dir / f"{code}.csv"
+
+        # 检查文件是否存在
         if not fp.exists():
+            # 如果文件不存在，记录警告日志并跳过
             logger.warning("%s 不存在，跳过", fp.name)
             continue
+
+        # 读取CSV文件，将"date"列解析为日期格式，并按日期排序
         df = pd.read_csv(fp, parse_dates=["date"]).sort_values("date")
+
+        # 将数据框存入字典，键为代码
         frames[code] = df
+
+    # 返回包含所有数据框的字典
     return frames
 
 
@@ -79,8 +95,9 @@ def instantiate_selector(cfg: Dict[str, Any]):
 
 def main():
     p = argparse.ArgumentParser(description="Run selectors defined in configs.json")
-    p.add_argument("--data-dir", default="./data", help="CSV 行情目录")
+    p.add_argument("--data-dir", default=r"C:\code\stockData", help="CSV 行情目录")
     p.add_argument("--config", default="./configs.json", help="Selector 配置文件")
+    # p.add_argument("--config", default="./debugConfigs.json", help="Selector 配置文件")
     p.add_argument("--date", help="交易日 YYYY-MM-DD；缺省=数据最新日期")
     p.add_argument("--tickers", default="all", help="'all' 或逗号分隔股票代码列表")
     args = p.parse_args()
@@ -92,7 +109,7 @@ def main():
         sys.exit(1)
 
     codes = (
-        [f.stem for f in data_dir.glob("*.csv")]
+        [f.stem for f in data_dir.glob("*.csv") if f.stem.isdigit() and int(f.stem) < 698000]
         if args.tickers.lower() == "all"
         else [c.strip() for c in args.tickers.split(",") if c.strip()]
     )
@@ -105,11 +122,30 @@ def main():
         logger.error("未能加载任何行情数据")
         sys.exit(1)
 
-    trade_date = (
-        pd.to_datetime(args.date)
-        if args.date
-        else max(df["date"].max() for df in data.values())
-    )
+    try:
+        # trade_date = (
+        #     pd.to_datetime(args.date)
+        #     if args.date
+        #     else max(pd.to_datetime(df["date"]).max() for df in data.values())
+        # )
+        csv_files = list(data_dir.glob("*.csv"))
+        trade_date_srt = pd.read_csv(csv_files[0]).iloc[-1, 0]
+        trade_date = dt.datetime.strptime(trade_date_srt, "%Y-%m-%d")
+        # trade_date = datetime.date.today()
+    except Exception as e:
+        # 收集所有date列的类型信息
+        type_info = []
+        for code, df in data.items():
+            if "date" in df.columns:
+                sample_value = df["date"].iloc[0] if len(df) > 0 else None
+                type_info.append(f"{code}: {type(sample_value)}")
+
+        logger.error(f"日期处理出错: {str(e)}")
+        logger.error("各股票date列类型信息:")
+        for info in type_info:
+            logger.error(info)
+        sys.exit(1)
+
     if not args.date:
         logger.info("未指定 --date，使用最近日期 %s", trade_date.date())
 

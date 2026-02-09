@@ -1,0 +1,19 @@
+{
+  "selectors": [
+    {
+      "class": "Down20",
+      "alias": "单针下20",
+      "activate": true,
+      "params": {
+        "n_short": 3,
+        "n_long": 21,
+        "m": 5,
+        "bbi_min_window": 2,
+        "max_window": 120,
+        "bbi_q_threshold": 0.2,
+        "upper_rsv_threshold": 75,
+        "lower_rsv_threshold": 25
+      }
+    }
+  ]
+}
