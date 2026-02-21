@@ -5,7 +5,6 @@ import importlib
 import json
 import logging
 import sys
-import datetime
 from pathlib import Path
 from typing import Any, Dict, Iterable, List
 
@@ -26,6 +25,7 @@ logger = logging.getLogger("select")
 
 
 # ---------- 工具 ----------
+
 
 # 定义函数：加载数据
 def load_data(data_dir: Path, codes: Iterable[str]) -> Dict[str, pd.DataFrame]:
@@ -93,9 +93,14 @@ def instantiate_selector(cfg: Dict[str, Any]):
 
 # ---------- 主函数 ----------
 
+
 def main():
     p = argparse.ArgumentParser(description="Run selectors defined in configs.json")
-    p.add_argument("--data-dir", default=r"C:\code\stockData", help="CSV 行情目录")
+    p.add_argument(
+        "--data-dir",
+        default=r"/Users/noctis/Documents/code/stock/StockTradebyZ/data",
+        help="CSV 行情目录",
+    )
     p.add_argument("--config", default="./configs.json", help="Selector 配置文件")
     # p.add_argument("--config", default="./debugConfigs.json", help="Selector 配置文件")
     p.add_argument("--date", help="交易日 YYYY-MM-DD；缺省=数据最新日期")
@@ -109,7 +114,11 @@ def main():
         sys.exit(1)
 
     codes = (
-        [f.stem for f in data_dir.glob("*.csv") if f.stem.isdigit() and int(f.stem) < 698000]
+        [
+            f.stem
+            for f in data_dir.glob("*.csv")
+            if f.stem.isdigit() and int(f.stem) < 698000
+        ]
         if args.tickers.lower() == "all"
         else [c.strip() for c in args.tickers.split(",") if c.strip()]
     )

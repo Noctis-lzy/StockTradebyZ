@@ -200,7 +200,9 @@ def main():
     parser.add_argument("--start", default="20190101", help="起始日期 YYYYMMDD 或 'today'")
     parser.add_argument("--end", default="today", help="结束日期 YYYYMMDD 或 'today'")
     # 股票清单与板块过滤
-    parser.add_argument("--stocklist", type=Path, default=Path(r"C:\code\stockList\stocklist.csv"),
+    # parser.add_argument("--stocklist", type=Path, default=Path(r"C:\code\stockList\stocklist.csv"),
+    #                     help="股票清单CSV路径（需含 ts_code 或 symbol）")
+    parser.add_argument("--stocklist", type=Path, default=Path(r"/Users/noctis/Documents/code/stock/StockTradebyZ/stocklist.csv"),
                         help="股票清单CSV路径（需含 ts_code 或 symbol）")
     parser.add_argument(
         "--exclude-boards",
@@ -211,7 +213,7 @@ def main():
     )
     # 其它
     # parser.add_argument("--out", default="C:\code\stockData", help="输出目录")
-    parser.add_argument("--out", default=r"C:\code\stockData", help="输出目录")
+    parser.add_argument("--out", default=r"/Users/noctis/Documents/code/stock/StockTradebyZ/data", help="输出目录")
     parser.add_argument("--workers", type=int, default=2, help="并发线程数")
     parser.add_argument("--batch-size", type=int, default=100, help="每批处理的股票数量")
     args = parser.parse_args()
