@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>工具箱首页原型</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            background: #f0f2f5;
+            min-height: 100vh;
+        }
+        .prototype-label {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: #ff6b6b;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: bold;
+            z-index: 1000;
+        }
+        .header {
+            background: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 0 48px;
+            height: 64px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header h1 {
+            font-size: 20px;
+            color: #262626;
+            font-weight: 500;
+        }
+        .logout-btn {
+            background: #ff4d4f;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .content {
+            padding: 48px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .page-title {
+            font-size: 24px;
+            color: #262626;
+            margin-bottom: 32px;
+            font-weight: 500;
+        }
+        .tools-grid {
+            display: flex;
+            gap: 24px;
+            flex-wrap: wrap;
+        }
+        .tool-card {
+            width: 280px;
+            height: 320px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 1px solid transparent;
+        }
+        .tool-card:hover {
+            box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+            border-color: #1890ff;
+            transform: translateY(-2px);
+        }
+        .tool-icon {
+            font-size: 48px;
+            margin-bottom: 24px;
+        }
+        .tool-card:nth-child(1) .tool-icon { color: #1890ff; }
+        .tool-card:nth-child(2) .tool-icon { color: #52c41a; }
+        .tool-card:nth-child(3) .tool-icon { color: #fa8c16; }
+        .tool-title {
+            font-size: 18px;
+            color: #262626;
+            margin-bottom: 12px;
+            font-weight: 500;
+        }
+        .tool-desc {
+            font-size: 14px;
+            color: #8c8c8c;
+        }
+        .annotation {
+            position: fixed;
+            right: 20px;
+            top: 100px;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            max-width: 280px;
+        }
+        .annotation h3 {
+            font-size: 14px;
+            color: #262626;
+            margin-bottom: 12px;
+            border-bottom: 2px solid #1890ff;
+            padding-bottom: 8px;
+        }
+        .annotation ul {
+            list-style: none;
+            font-size: 13px;
+            color: #595959;
+            line-height: 1.8;
+        }
+        .annotation li::before {
+            content: "•";
+            color: #1890ff;
+            margin-right: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="prototype-label">原型 - 工具箱首页</div>
+    
+    <header class="header">
+        <h1>个人工具箱</h1>
+        <button class="logout-btn">
+            <span>🚪</span>
+            <span>退出登录</span>
+        </button>
+    </header>
+
+    <main class="content">
+        <h2 class="page-title">欢迎使用股票交易系统</h2>
+        <div class="tools-grid">
+            <div class="tool-card">
+                <div class="tool-icon">📊</div>
+                <div class="tool-title">选股工具</div>
+                <div class="tool-desc">智能选股分析</div>
+            </div>
+            <div class="tool-card">
+                <div class="tool-icon">📈</div>
+                <div class="tool-title">批量回测工具</div>
+                <div class="tool-desc">策略回测分析</div>
+            </div>
+            <div class="tool-card">
+                <div class="tool-icon">📉</div>
+                <div class="tool-title">个股回测工具</div>
+                <div class="tool-desc">个股买卖点分析</div>
+            </div>
+            <div class="tool-card">
+                <div class="tool-icon">⚙️</div>
+                <div class="tool-title">策略管理</div>
+                <div class="tool-desc">策略创建与管理</div>
+            </div>
+        </div>
+    </main>
+
+    <div class="annotation">
+        <h3>页面说明</h3>
+        <ul>
+            <li>顶部导航栏</li>
+            <li>退出登录按钮</li>
+            <li>欢迎标题</li>
+            <li>工具卡片网格布局</li>
+            <li>悬停效果</li>
+            <li>点击跳转对应工具</li>
+        </ul>
+    </div>
+</body>
+</html>

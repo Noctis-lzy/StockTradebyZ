@@ -2,7 +2,7 @@ import backtrader as bt
 import pandas as pd
 import os
 
-from backtrader4Lu.strategy.DoubleLine import DoubleLineStrategy
+from backtrader4Lu.strategy.double_line_b1_strategy import DoubleLineStrategy
 from backtrader4Lu.strategy.buy import B1BuyStrategy
 
 from backtrader4Lu.strategy.sell import (
@@ -37,9 +37,9 @@ def run_backtest(
     buy_strategies=None,
     sell_strategies=None,
 ):
-    data_path = f"data/{stock_code}.csv"
+    data_path = f"data/stock_kline_data/{stock_code}.csv"
     if not os.path.exists(data_path):
-        data_path = f"../data/{stock_code}.csv"
+        data_path = f"../data/stock_kline_data/{stock_code}.csv"
 
     if not os.path.exists(data_path):
         print(f"错误: 找不到股票数据文件 {data_path}")
@@ -105,7 +105,7 @@ def run_backtest(
 
 
 if __name__ == "__main__":
-    stock_code = "002261"
+    stock_code = "600362"
     initial_cash = 500000
     commission = 0.0002
     start_date = "2024-09-24"

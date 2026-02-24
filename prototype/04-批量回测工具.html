@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>批量回测工具原型</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            background: #f0f2f5;
+            min-height: 100vh;
+        }
+        .prototype-label {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: #ff6b6b;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: bold;
+            z-index: 1000;
+        }
+        .header {
+            background: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 0 48px;
+            height: 64px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header h1 {
+            font-size: 20px;
+            color: #262626;
+            font-weight: 500;
+        }
+        .header-actions {
+            display: flex;
+            gap: 12px;
+        }
+        .btn {
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            border: none;
+        }
+        .btn-default {
+            background: white;
+            border: 1px solid #d9d9d9;
+            color: #595959;
+        }
+        .btn-primary {
+            background: #1890ff;
+            color: white;
+        }
+        .content {
+            padding: 24px 48px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .tabs {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 24px;
+            background: white;
+            padding: 4px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            width: fit-content;
+        }
+        .tab {
+            padding: 10px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #595959;
+            transition: all 0.3s;
+        }
+        .tab.active {
+            background: #1890ff;
+            color: white;
+        }
+        .config-section {
+            background: white;
+            padding: 24px;
+            border-radius: 8px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        .section-title {
+            font-size: 16px;
+            color: #262626;
+            margin-bottom: 16px;
+            font-weight: 500;
+        }
+        .form-row {
+            display: flex;
+            gap: 24px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+        .form-item {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .form-item label {
+            font-size: 14px;
+            color: #595959;
+        }
+        .form-input, .form-select {
+            width: 200px;
+            height: 36px;
+            padding: 0 12px;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        .strategy-cards {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+        .strategy-card {
+            width: 240px;
+            padding: 16px;
+            border: 2px solid #e8e8e8;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .strategy-card:hover, .strategy-card.selected {
+            border-color: #1890ff;
+            background: #f0f7ff;
+        }
+        .strategy-card h4 {
+            font-size: 14px;
+            color: #262626;
+            margin-bottom: 8px;
+        }
+        .strategy-card p {
+            font-size: 12px;
+            color: #8c8c8c;
+        }
+        .results-section {
+            background: white;
+            padding: 24px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .stat-card {
+            background: #fafafa;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 28px;
+            font-weight: 600;
+            color: #1890ff;
+            margin-bottom: 8px;
+        }
+        .stat-value.positive {
+            color: #52c41a;
+        }
+        .stat-value.negative {
+            color: #ff4d4f;
+        }
+        .stat-label {
+            font-size: 14px;
+            color: #8c8c8c;
+        }
+        .chart-placeholder {
+            height: 300px;
+            background: #fafafa;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #8c8c8c;
+            font-size: 14px;
+            margin-bottom: 24px;
+            border: 2px dashed #d9d9d9;
+        }
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .data-table th,
+        .data-table td {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 14px;
+        }
+        .data-table th {
+            background: #fafafa;
+            color: #262626;
+            font-weight: 500;
+        }
+        .data-table td {
+            color: #595959;
+        }
+        .tag {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+        .tag-green {
+            background: #f6ffed;
+            color: #52c41a;
+        }
+        .tag-red {
+            background: #fff1f0;
+            color: #ff4d4f;
+        }
+        .annotation {
+            position: fixed;
+            right: 20px;
+            top: 100px;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            max-width: 280px;
+        }
+        .annotation h3 {
+            font-size: 14px;
+            color: #262626;
+            margin-bottom: 12px;
+            border-bottom: 2px solid #1890ff;
+            padding-bottom: 8px;
+        }
+        .annotation ul {
+            list-style: none;
+            font-size: 13px;
+            color: #595959;
+            line-height: 1.8;
+        }
+        .annotation li::before {
+            content: "•";
+            color: #1890ff;
+            margin-right: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="prototype-label">原型 - 批量回测工具</div>
+    
+    <header class="header">
+        <h1>批量回测工具</h1>
+        <div class="header-actions">
+            <button class="btn btn-default">返回工具箱</button>
+            <button class="btn btn-primary">开始回测</button>
+        </div>
+    </header>
+
+    <main class="content">
+        <div class="tabs">
+            <div class="tab active">策略配置</div>
+            <div class="tab">回测结果</div>
+            <div class="tab">交易明细</div>
+        </div>
+
+        <div class="config-section">
+            <h3 class="section-title">回测设置</h3>
+            <div class="form-row">
+                <div class="form-item">
+                    <label>回测时间范围</label>
+                    <input type="date" class="form-input" value="2024-01-01">
+                </div>
+                <div class="form-item">
+                    <label>至</label>
+                    <input type="date" class="form-input" value="2024-12-31">
+                </div>
+                <div class="form-item">
+                    <label>初始资金</label>
+                    <input type="text" class="form-input" value="1000000">
+                </div>
+                <div class="form-item">
+                    <label>股票池</label>
+                    <select class="form-select">
+                        <option>全市场</option>
+                        <option>沪深300</option>
+                        <option>中证500</option>
+                        <option>自定义</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="config-section">
+            <h3 class="section-title">选择策略</h3>
+            <div class="strategy-cards">
+                <div class="strategy-card selected">
+                    <h4>双均线策略</h4>
+                    <p>短期均线上穿长期均线买入，下穿卖出</p>
+                </div>
+                <div class="strategy-card">
+                    <h4>MACD策略</h4>
+                    <p>MACD金叉买入，死叉卖出</p>
+                </div>
+                <div class="strategy-card">
+                    <h4>KDJ策略</h4>
+                    <p>KDJ超卖区买入，超买区卖出</p>
+                </div>
+                <div class="strategy-card">
+                    <h4>布林带策略</h4>
+                    <p>触及下轨买入，触及上轨卖出</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="results-section">
+            <h3 class="section-title">回测结果概览</h3>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value positive">+23.58%</div>
+                    <div class="stat-label">总收益率</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">1.85</div>
+                    <div class="stat-label">夏普比率</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value negative">-8.32%</div>
+                    <div class="stat-label">最大回撤</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">62.5%</div>
+                    <div class="stat-label">胜率</div>
+                </div>
+            </div>
+            <div class="chart-placeholder">
+                📈 收益率曲线图表区域
+            </div>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>股票代码</th>
+                        <th>股票名称</th>
+                        <th>收益率</th>
+                        <th>交易次数</th>
+                        <th>胜率</th>
+                        <th>盈亏比</th>
+                        <th>最大回撤</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>000001</td>
+                        <td>平安银行</td>
+                        <td><span class="tag tag-green">+15.23%</span></td>
+                        <td>12</td>
+                        <td>58.3%</td>
+                        <td>1.85</td>
+                        <td>-5.2%</td>
+                    </tr>
+                    <tr>
+                        <td>000002</td>
+                        <td>万科A</td>
+                        <td><span class="tag tag-red">-3.56%</span></td>
+                        <td>8</td>
+                        <td>50.0%</td>
+                        <td>0.92</td>
+                        <td>-12.5%</td>
+                    </tr>
+                    <tr>
+                        <td>600519</td>
+                        <td>贵州茅台</td>
+                        <td><span class="tag tag-green">+28.65%</span></td>
+                        <td>6</td>
+                        <td>66.7%</td>
+                        <td>2.35</td>
+                        <td>-4.8%</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <div class="annotation">
+        <h3>页面说明</h3>
+        <ul>
+            <li>Tab切换：配置/结果/明细</li>
+            <li>回测时间范围设置</li>
+            <li>初始资金配置</li>
+            <li>股票池选择</li>
+            <li>策略卡片选择</li>
+            <li>关键指标统计</li>
+            <li>收益率曲线图</li>
+            <li>个股回测结果表</li>
+        </ul>
+    </div>
+</body>
+</html>

@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登录页原型</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .prototype-label {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: #ff6b6b;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        .login-card {
+            width: 400px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            overflow: hidden;
+        }
+        .card-header {
+            padding: 24px;
+            border-bottom: 1px solid #f0f0f0;
+            text-align: center;
+        }
+        .card-header h2 {
+            font-size: 20px;
+            color: #262626;
+            font-weight: 500;
+        }
+        .card-body {
+            padding: 32px 24px;
+        }
+        .form-item {
+            margin-bottom: 24px;
+        }
+        .form-item label {
+            display: block;
+            margin-bottom: 8px;
+            color: #262626;
+            font-size: 14px;
+        }
+        .input-wrapper {
+            position: relative;
+        }
+        .input-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #bfbfbf;
+            font-size: 16px;
+        }
+        .form-input {
+            width: 100%;
+            height: 40px;
+            padding: 0 12px 0 40px;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        .form-input:focus {
+            outline: none;
+            border-color: #1890ff;
+            box-shadow: 0 0 0 2px rgba(24,144,255,0.2);
+        }
+        .form-input::placeholder {
+            color: #bfbfbf;
+        }
+        .submit-btn {
+            width: 100%;
+            height: 40px;
+            background: #1890ff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .submit-btn:hover {
+            background: #40a9ff;
+        }
+        .card-footer {
+            padding: 16px 24px;
+            text-align: center;
+            color: #999;
+            font-size: 12px;
+            border-top: 1px solid #f0f0f0;
+        }
+        .annotation {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255,255,255,0.95);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            max-width: 280px;
+        }
+        .annotation h3 {
+            font-size: 14px;
+            color: #262626;
+            margin-bottom: 12px;
+            border-bottom: 2px solid #1890ff;
+            padding-bottom: 8px;
+        }
+        .annotation ul {
+            list-style: none;
+            font-size: 13px;
+            color: #595959;
+            line-height: 1.8;
+        }
+        .annotation li::before {
+            content: "•";
+            color: #1890ff;
+            margin-right: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="prototype-label">原型 - 登录页</div>
+    
+    <div class="login-card">
+        <div class="card-header">
+            <h2>股票交易系统</h2>
+        </div>
+        <div class="card-body">
+            <div class="form-item">
+                <div class="input-wrapper">
+                    <span class="input-icon">👤</span>
+                    <input type="text" class="form-input" placeholder="用户名 (admin)">
+                </div>
+            </div>
+            <div class="form-item">
+                <div class="input-wrapper">
+                    <span class="input-icon">🔒</span>
+                    <input type="password" class="form-input" placeholder="密码 (admin123)">
+                </div>
+            </div>
+            <button class="submit-btn">登录</button>
+        </div>
+        <div class="card-footer">
+            默认账号: admin / admin123
+        </div>
+    </div>
+
+    <div class="annotation">
+        <h3>页面说明</h3>
+        <ul>
+            <li>渐变色背景设计</li>
+            <li>居中登录卡片</li>
+            <li>用户名/密码输入框</li>
+            <li>登录按钮</li>
+            <li>默认账号提示</li>
+            <li>表单验证提示</li>
+        </ul>
+    </div>
+</body>
+</html>

@@ -4,3 +4,9 @@ python-jose[cryptography]==3.3.0
 python-multipart==0.0.12
 pydantic==2.9.2
 pydantic-settings==2.6.0
+apscheduler==3.10.4
+pandas==2.3.0
+tushare==1.4.21
+tqdm>=4.65.0
+numpy>=1.20.0
+backtrader>=1.9.76.123

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Layout, Button, Card, Space, Typography } from 'antd';
-import { LogoutOutlined, StockOutlined, LineChartOutlined, BarChartOutlined } from '@ant-design/icons';
+import { LogoutOutlined, StockOutlined, LineChartOutlined, BarChartOutlined, SettingOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 
 const { Header, Content } = Layout;
@@ -35,6 +35,13 @@ const Toolbox = () => {
       description: '个股买卖点分析',
       icon: <BarChartOutlined style={{ fontSize: '48px', color: '#fa8c16' }} />,
       onClick: () => navigate('/single-backtest')
+    },
+    {
+      id: 'strategy-management',
+      title: '策略管理',
+      description: '策略与指标管理',
+      icon: <SettingOutlined style={{ fontSize: '48px', color: '#722ed1' }} />,
+      onClick: () => navigate('/strategy-management')
     }
   ];
 

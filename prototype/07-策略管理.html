@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>策略管理原型</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            background: #f0f2f5;
+            min-height: 100vh;
+        }
+        .prototype-label {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: #ff6b6b;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: bold;
+            z-index: 1000;
+        }
+        .header {
+            background: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 0 48px;
+            height: 64px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header h1 {
+            font-size: 20px;
+            color: #262626;
+            font-weight: 500;
+        }
+        .logout-btn {
+            background: #ff4d4f;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .content {
+            padding: 48px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .page-title {
+            font-size: 24px;
+            color: #262626;
+            margin-bottom: 32px;
+            font-weight: 500;
+        }
+        .tabs {
+            display: flex;
+            margin-bottom: 24px;
+            background: white;
+            border-radius: 8px 8px 0 0;
+            overflow: hidden;
+        }
+        .tab {
+            flex: 1;
+            padding: 16px;
+            text-align: center;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+        .tab.active {
+            color: #1890ff;
+            border-bottom-color: #1890ff;
+            font-weight: 500;
+        }
+        .panel {
+            background: white;
+            border-radius: 0 0 8px 8px;
+            padding: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        .strategy-section {
+            margin-bottom: 32px;
+        }
+        .section-title {
+            font-size: 18px;
+            color: #262626;
+            margin-bottom: 16px;
+            font-weight: 500;
+        }
+        .strategy-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 16px;
+        }
+        .strategy-card {
+            border: 1px solid #e8e8e8;
+            border-radius: 8px;
+            padding: 20px;
+            transition: all 0.3s;
+        }
+        .strategy-card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border-color: #1890ff;
+        }
+        .strategy-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .strategy-name {
+            font-size: 16px;
+            color: #262626;
+            font-weight: 500;
+        }
+        .strategy-type {
+            font-size: 12px;
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+        .strategy-type.system {
+            background: #e6f7ff;
+            color: #1890ff;
+        }
+        .strategy-type.custom {
+            background: #f6ffed;
+            color: #52c41a;
+        }
+        .strategy-desc {
+            font-size: 14px;
+            color: #8c8c8c;
+            margin-bottom: 16px;
+            line-height: 1.4;
+        }
+        .strategy-actions {
+            display: flex;
+            gap: 8px;
+        }
+        .btn {
+            padding: 6px 12px;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .btn-primary {
+            background: #1890ff;
+            color: white;
+            border-color: #1890ff;
+        }
+        .btn-primary:hover {
+            background: #40a9ff;
+        }
+        .btn-outline {
+            background: white;
+            color: #1890ff;
+            border-color: #1890ff;
+        }
+        .btn-outline:hover {
+            background: #e6f7ff;
+        }
+        .btn-secondary {
+            background: #f5f5f5;
+            color: #262626;
+        }
+        .btn-secondary:hover {
+            background: #e8e8e8;
+        }
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 16px;
+        }
+        .metric-card {
+            border: 1px solid #e8e8e8;
+            border-radius: 8px;
+            padding: 16px;
+        }
+        .metric-name {
+            font-size: 16px;
+            color: #262626;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        .metric-desc {
+            font-size: 12px;
+            color: #8c8c8c;
+            margin-bottom: 12px;
+        }
+        .metric-params {
+            font-size: 12px;
+            color: #595959;
+        }
+        .annotation {
+            position: fixed;
+            right: 20px;
+            top: 100px;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            max-width: 280px;
+        }
+        .annotation h3 {
+            font-size: 14px;
+            color: #262626;
+            margin-bottom: 12px;
+            border-bottom: 2px solid #1890ff;
+            padding-bottom: 8px;
+        }
+        .annotation ul {
+            list-style: none;
+            font-size: 13px;
+            color: #595959;
+            line-height: 1.8;
+        }
+        .annotation li::before {
+            content: "•";
+            color: #1890ff;
+            margin-right: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="prototype-label">原型 - 策略管理</div>
+    
+    <header class="header">
+        <h1>策略管理</h1>
+        <button class="logout-btn">
+            <span>🚪</span>
+            <span>退出登录</span>
+        </button>
+    </header>
+
+    <main class="content">
+        <h2 class="page-title">策略与指标管理</h2>
+        
+        <div class="tabs">
+            <div class="tab active">策略管理</div>
+            <div class="tab">指标管理</div>
+        </div>
+        
+        <div class="panel">
+            <!-- 策略管理面板 -->
+            <div id="strategy-panel">
+                <div class="strategy-section">
+                    <div class="section-title">系统默认策略</div>
+                    <div class="strategy-list">
+                        <div class="strategy-card">
+                            <div class="strategy-header">
+                                <div class="strategy-name">双线策略</div>
+                                <div class="strategy-type system">系统</div>
+                            </div>
+                            <div class="strategy-desc">基于两条移动平均线的交叉信号，适用于趋势判断</div>
+                            <div class="strategy-actions">
+                                <button class="btn btn-secondary">详情</button>
+                            </div>
+                        </div>
+                        <div class="strategy-card">
+                            <div class="strategy-header">
+                                <div class="strategy-name">单针策略</div>
+                                <div class="strategy-type system">系统</div>
+                            </div>
+                            <div class="strategy-desc">基于K线形态的反转信号，适用于短期反转判断</div>
+                            <div class="strategy-actions">
+                                <button class="btn btn-secondary">详情</button>
+                            </div>
+                        </div>
+                        <div class="strategy-card">
+                            <div class="strategy-header">
+                                <div class="strategy-name">砖型图策略</div>
+                                <div class="strategy-type system">系统</div>
+                            </div>
+                            <div class="strategy-desc">基于价格突破的趋势信号，适用于趋势跟踪</div>
+                            <div class="strategy-actions">
+                                <button class="btn btn-secondary">详情</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="strategy-section">
+                    <div class="section-title">用户自定义策略</div>
+                    <div class="strategy-list">
+                        <div class="strategy-card">
+                            <div class="strategy-header">
+                                <div class="strategy-name">自定义策略 1</div>
+                                <div class="strategy-type custom">自定义</div>
+                            </div>
+                            <div class="strategy-desc">（规划中，先不实现）用户可自定义策略组合</div>
+                            <div class="strategy-actions">
+                                <button class="btn btn-outline">编辑</button>
+                                <button class="btn btn-secondary">删除</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 指标管理面板 -->
+            <div id="metric-panel" style="display: none;">
+                <div class="section-title">系统指标列表</div>
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-name">当日收盘价</div>
+                        <div class="metric-desc">股票当日交易结束时的价格</div>
+                        <div class="metric-params">参数：无</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-name">散户成本线</div>
+                        <div class="metric-desc">反映散户平均持仓成本</div>
+                        <div class="metric-params">参数：计算周期</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-name">大哥成本线</div>
+                        <div class="metric-desc">反映主力资金平均持仓成本</div>
+                        <div class="metric-params">参数：计算周期</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-name">KDJ指标</div>
+                        <div class="metric-desc">随机指标，用于判断股票超买超卖</div>
+                        <div class="metric-params">参数：周期、平滑参数</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-name">MA指标</div>
+                        <div class="metric-desc">移动平均线，反映价格趋势</div>
+                        <div class="metric-params">参数：周期</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-name">成交量MA</div>
+                        <div class="metric-desc">成交量移动平均线，反映成交量趋势</div>
+                        <div class="metric-params">参数：周期</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-name">MACD指标</div>
+                        <div class="metric-desc">指数平滑异同移动平均线，用于判断价格动能</div>
+                        <div class="metric-params">参数：快线周期、慢线周期、信号周期</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div class="annotation">
+        <h3>页面说明</h3>
+        <ul>
+            <li>标签页切换（策略/指标）</li>
+            <li>系统默认策略展示</li>
+            <li>用户自定义策略区域</li>
+            <li>策略卡片包含名称、类型、描述</li>
+            <li>策略操作按钮（执行/配置/详情）</li>
+            <li>指标列表展示</li>
+            <li>响应式网格布局</li>
+        </ul>
+    </div>
+
+    <script>
+        // 标签页切换功能
+        const tabs = document.querySelectorAll('.tab');
+        const strategyPanel = document.getElementById('strategy-panel');
+        const metricPanel = document.getElementById('metric-panel');
+        
+        tabs.forEach((tab, index) => {
+            tab.addEventListener('click', () => {
+                // 移除所有标签的active状态
+                tabs.forEach(t => t.classList.remove('active'));
+                // 添加当前标签的active状态
+                tab.classList.add('active');
+                
+                // 显示对应面板
+                if (index === 0) {
+                    strategyPanel.style.display = 'block';
+                    metricPanel.style.display = 'none';
+                } else {
+                    strategyPanel.style.display = 'none';
+                    metricPanel.style.display = 'block';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

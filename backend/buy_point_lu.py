@@ -6,7 +6,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from threading import Lock
 
 from back_test_lu import run_backtest, StockPandasData
-from backtrader4Lu.strategy.DoubleLine import DoubleLineStrategy
+from backtrader4Lu.strategy.double_line_b1_strategy import DoubleLineStrategy
 from backtrader4Lu.strategy.buy import B1BuyStrategy
 from backtrader4Lu.strategy.sell import (
     CloseBelowDuokongSellStrategy,

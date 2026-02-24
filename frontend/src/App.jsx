@@ -5,6 +5,7 @@ import Toolbox from './pages/Toolbox';
 import StockSelector from './pages/StockSelector';
 import BatchBacktest from './pages/BatchBacktest';
 import SingleBacktest from './pages/SingleBacktest';
+import StrategyManagement from './pages/StrategyManagement';
 
 const PrivateRoute = ({ children }) => {
   const token = localStorage.getItem('token');
@@ -45,6 +46,14 @@ const App = () => {
           element={
             <PrivateRoute>
               <SingleBacktest />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/strategy-management"
+          element={
+            <PrivateRoute>
+              <StrategyManagement />
             </PrivateRoute>
           }
         />

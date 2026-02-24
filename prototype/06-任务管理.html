@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>任务管理原型</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            background: #f0f2f5;
+            min-height: 100vh;
+        }
+        .prototype-label {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: #ff6b6b;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: bold;
+            z-index: 1000;
+        }
+        .header {
+            background: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 0 48px;
+            height: 64px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header h1 {
+            font-size: 20px;
+            color: #262626;
+            font-weight: 500;
+        }
+        .header-actions {
+            display: flex;
+            gap: 12px;
+        }
+        .btn {
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            border: none;
+        }
+        .btn-default {
+            background: white;
+            border: 1px solid #d9d9d9;
+            color: #595959;
+        }
+        .btn-primary {
+            background: #1890ff;
+            color: white;
+        }
+        .content {
+            padding: 24px 48px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .filter-bar {
+            background: white;
+            padding: 16px 24px;
+            border-radius: 8px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+        .filter-input, .filter-select {
+            height: 36px;
+            padding: 0 12px;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        .filter-input {
+            width: 240px;
+        }
+        .filter-select {
+            width: 140px;
+        }
+        .task-table-container {
+            background: white;
+            padding: 24px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        .table-toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        .batch-actions {
+            display: flex;
+            gap: 8px;
+        }
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .data-table th,
+        .data-table td {
+            padding: 14px 16px;
+            text-align: left;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 14px;
+        }
+        .data-table th {
+            background: #fafafa;
+            color: #262626;
+            font-weight: 500;
+        }
+        .data-table td {
+            color: #595959;
+        }
+        .data-table tr:hover td {
+            background: #f5f5f5;
+        }
+        .status-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+        .status-pending {
+            background: #fff7e6;
+            color: #fa8c16;
+        }
+        .status-running {
+            background: #e6f7ff;
+            color: #1890ff;
+        }
+        .status-success {
+            background: #f6ffed;
+            color: #52c41a;
+        }
+        .status-failed {
+            background: #fff1f0;
+            color: #ff4d4f;
+        }
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+        }
+        .status-dot.pending { background: #fa8c16; }
+        .status-dot.running { background: #1890ff; animation: pulse 1.5s infinite; }
+        .status-dot.success { background: #52c41a; }
+        .status-dot.failed { background: #ff4d4f; }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .progress-bar {
+            width: 100px;
+            height: 8px;
+            background: #f0f0f0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: #1890ff;
+            border-radius: 4px;
+            transition: width 0.3s;
+        }
+        .action-btns {
+            display: flex;
+            gap: 8px;
+        }
+        .action-btn {
+            padding: 4px 8px;
+            border: none;
+            background: transparent;
+            color: #1890ff;
+            cursor: pointer;
+            font-size: 13px;
+        }
+        .action-btn:hover {
+            color: #40a9ff;
+        }
+        .action-btn.danger {
+            color: #ff4d4f;
+        }
+        .pagination {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 8px;
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid #f0f0f0;
+        }
+        .page-btn {
+            padding: 6px 12px;
+            border: 1px solid #d9d9d9;
+            background: white;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .page-btn.active {
+            background: #1890ff;
+            color: white;
+            border-color: #1890ff;
+        }
+        .annotation {
+            position: fixed;
+            right: 20px;
+            top: 100px;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            max-width: 280px;
+        }
+        .annotation h3 {
+            font-size: 14px;
+            color: #262626;
+            margin-bottom: 12px;
+            border-bottom: 2px solid #1890ff;
+            padding-bottom: 8px;
+        }
+        .annotation ul {
+            list-style: none;
+            font-size: 13px;
+            color: #595959;
+            line-height: 1.8;
+        }
+        .annotation li::before {
+            content: "•";
+            color: #1890ff;
+            margin-right: 8px;
+        }
+        .type-tag {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            background: #f0f0f0;
+            color: #595959;
+        }
+        .type-tag.selection {
+            background: #e6f7ff;
+            color: #1890ff;
+        }
+        .type-tag.backtest {
+            background: #f6ffed;
+            color: #52c41a;
+        }
+    </style>
+</head>
+<body>
+    <div class="prototype-label">原型 - 任务管理</div>
+    
+    <header class="header">
+        <h1>任务管理</h1>
+        <div class="header-actions">
+            <button class="btn btn-default">返回工具箱</button>
+            <button class="btn btn-primary">+ 新建任务</button>
+        </div>
+    </header>
+
+    <main class="content">
+        <div class="filter-bar">
+            <input type="text" class="filter-input" placeholder="搜索任务名称">
+            <select class="filter-select">
+                <option>全部类型</option>
+                <option>选股任务</option>
+                <option>回测任务</option>
+            </select>
+            <select class="filter-select">
+                <option>全部状态</option>
+                <option>待执行</option>
+                <option>执行中</option>
+                <option>已完成</option>
+                <option>失败</option>
+            </select>
+            <button class="btn btn-primary">查询</button>
+            <button class="btn btn-default">重置</button>
+        </div>
+
+        <div class="task-table-container">
+            <div class="table-toolbar">
+                <div class="batch-actions">
+                    <button class="btn btn-default">批量启动</button>
+                    <button class="btn btn-default">批量暂停</button>
+                    <button class="btn btn-default danger">批量删除</button>
+                </div>
+                <span style="color: #8c8c8c; font-size: 14px;">共 24 个任务</span>
+            </div>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th><input type="checkbox"></th>
+                        <th>任务名称</th>
+                        <th>任务类型</th>
+                        <th>状态</th>
+                        <th>进度</th>
+                        <th>创建时间</th>
+                        <th>下次执行</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><input type="checkbox"></td>
+                        <td>双均线选股策略_2024</td>
+                        <td><span class="type-tag selection">选股任务</span></td>
+                        <td>
+                            <span class="status-tag status-running">
+                                <span class="status-dot running"></span>
+                                执行中
+                            </span>
+                        </td>
+                        <td>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 65%;"></div>
+                                </div>
+                                <span style="font-size: 12px;">65%</span>
+                            </div>
+                        </td>
+                        <td>2024-01-15 09:30</td>
+                        <td>2024-01-16 09:30</td>
+                        <td>
+                            <div class="action-btns">
+                                <button class="action-btn">暂停</button>
+                                <button class="action-btn">详情</button>
+                                <button class="action-btn danger">删除</button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><input type="checkbox"></td>
+                        <td>MACD策略批量回测</td>
+                        <td><span class="type-tag backtest">回测任务</span></td>
+                        <td>
+                            <span class="status-tag status-success">
+                                <span class="status-dot success"></span>
+                                已完成
+                            </span>
+                        </td>
+                        <td>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 100%;"></div>
+                                </div>
+                                <span style="font-size: 12px;">100%</span>
+                            </div>
+                        </td>
+                        <td>2024-01-14 10:00</td>
+                        <td>-</td>
+                        <td>
+                            <div class="action-btns">
+                                <button class="action-btn">查看结果</button>
+                                <button class="action-btn">重新执行</button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><input type="checkbox"></td>
+                        <td>每日自动选股_科技板块</td>
+                        <td><span class="type-tag selection">选股任务</span></td>
+                        <td>
+                            <span class="status-tag status-pending">
+                                <span class="status-dot pending"></span>
+                                待执行
+                            </span>
+                        </td>
+                        <td>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 0%;"></div>
+                                </div>
+                                <span style="font-size: 12px;">0%</span>
+                            </div>
+                        </td>
+                        <td>2024-01-10 14:00</td>
+                        <td>2024-01-17 09:30</td>
+                        <td>
+                            <div class="action-btns">
+                                <button class="action-btn">立即执行</button>
+                                <button class="action-btn">编辑</button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><input type="checkbox"></td>
+                        <td>KDJ策略回测_消费股</td>
+                        <td><span class="type-tag backtest">回测任务</span></td>
+                        <td>
+                            <span class="status-tag status-failed">
+                                <span class="status-dot failed"></span>
+                                失败
+                            </span>
+                        </td>
+                        <td>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 35%; background: #ff4d4f;"></div>
+                                </div>
+                                <span style="font-size: 12px;">35%</span>
+                            </div>
+                        </td>
+                        <td>2024-01-12 11:30</td>
+                        <td>-</td>
+                        <td>
+                            <div class="action-btns">
+                                <button class="action-btn">查看日志</button>
+                                <button class="action-btn">重新执行</button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><input type="checkbox"></td>
+                        <td>布林带策略回测</td>
+                        <td><span class="type-tag backtest">回测任务</span></td>
+                        <td>
+                            <span class="status-tag status-running">
+                                <span class="status-dot running"></span>
+                                执行中
+                            </span>
+                        </td>
+                        <td>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 42%;"></div>
+                                </div>
+                                <span style="font-size: 12px;">42%</span>
+                            </div>
+                        </td>
+                        <td>2024-01-15 13:00</td>
+                        <td>-</td>
+                        <td>
+                            <div class="action-btns">
+                                <button class="action-btn">暂停</button>
+                                <button class="action-btn">取消</button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="pagination">
+                <button class="page-btn">上一页</button>
+                <button class="page-btn active">1</button>
+                <button class="page-btn">2</button>
+                <button class="page-btn">3</button>
+                <button class="page-btn">...</button>
+                <button class="page-btn">5</button>
+                <button class="page-btn">下一页</button>
+            </div>
+        </div>
+    </main>
+
+    <div class="annotation">
+        <h3>页面说明</h3>
+        <ul>
+            <li>任务搜索筛选</li>
+            <li>批量操作功能</li>
+            <li>任务列表表格</li>
+            <li>状态标签（带动画）</li>
+            <li>进度条展示</li>
+            <li>操作按钮组</li>
+            <li>分页功能</li>
+        </ul>
+    </div>
+</body>
+</html>
